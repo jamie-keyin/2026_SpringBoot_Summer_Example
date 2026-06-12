@@ -1,6 +1,7 @@
 package com.keyin.domain;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,7 +18,25 @@ public class TrailController {
     }
 
     @GetMapping("/trail/{id}")
-    public Trail getTrailById(@PathVariable Long id) {
-        return trailService.getTrailById(id);
+    public ResponseEntity<Trail> getTrailById(@PathVariable Long id) {
+        return trailService.getTrailById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/trail/{id}")
+    public ResponseEntity<Trail> updateTrail(@PathVariable Long id, @RequestBody Trail trail) {
+        return trailService.updateTrail(id, trail)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/trail/{id}")
+    public ResponseEntity<Void> deleteTrail(@PathVariable Long id) {
+        boolean deleted = trailService.deleteTrail(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 }
